@@ -300,7 +300,7 @@ public class PickActivity extends BaseActivity implements ActionHandler.Addons {
     }
 
     @Override
-    protected void refreshDirectory(int anim) {
+    public void refreshDirectory(int anim) {
         final FragmentManager fm = getSupportFragmentManager();
         final RootInfo root = getCurrentRoot();
         final DocumentInfo cwd = getCurrentDirectory();

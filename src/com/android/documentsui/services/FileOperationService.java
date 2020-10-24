@@ -411,6 +411,9 @@ public class FileOperationService extends Service implements Job.Listener {
             // Otherwise we may fail to dismiss progress notification.
             handler.post(() -> cleanUpNotification(job));
 
+            Intent intent = new Intent("job_finished");
+            sendBroadcast(intent);
+
             // Post the shutdown message to main thread after cleanUpNotification() to give it a
             // chance to run. Otherwise this process may be torn down by Android before we've
             // cleaned up the notifications of the last job.

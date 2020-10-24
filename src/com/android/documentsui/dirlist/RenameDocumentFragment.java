@@ -236,6 +236,11 @@ public class RenameDocumentFragment extends DialogFragment {
                 mDialog.dismiss();
             }
             mActivity.setPending(false);
+            try {
+              mActivity.refreshDirectory(AnimationView.ANIM_NONE);;
+            } catch (Exception e) {
+                Log.e(TAG,"Failed to refresh directory");
+            }
         }
     }
 }

@@ -48,6 +48,7 @@ import androidx.fragment.app.FragmentManager;
 
 import com.android.documentsui.base.DocumentInfo;
 import com.android.documentsui.base.Shared;
+import com.android.documentsui.dirlist.AnimationView;
 import com.android.documentsui.ui.Snackbars;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -172,6 +173,11 @@ public class CreateDirectoryFragment extends DialogFragment {
                 Metrics.logCreateDirError();
             }
             mActivity.setPending(false);
+            try {
+              mActivity.refreshDirectory(AnimationView.ANIM_NONE);
+            } catch (Exception e) {
+                Log.e(TAG,"Failed to refresh directory");
+            }
         }
     }
 }

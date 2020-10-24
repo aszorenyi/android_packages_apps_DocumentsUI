@@ -21,8 +21,11 @@ import static com.android.documentsui.base.SharedMinimal.DEBUG;
 import static com.android.documentsui.base.State.MODE_GRID;
 
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.BroadcastReceiver;
 import android.content.pm.ProviderInfo;
 import android.graphics.Color;
 import android.net.Uri;
@@ -121,7 +124,7 @@ public abstract class BaseActivity
         mTag = tag;
     }
 
-    protected abstract void refreshDirectory(int anim);
+    public abstract void refreshDirectory(int anim);
     /** Allows sub-classes to include information in a newly created State instance. */
     protected abstract void includeState(State initialState);
     protected abstract void onDirectoryCreated(DocumentInfo doc);
@@ -275,6 +278,11 @@ public abstract class BaseActivity
 
         // Base classes must update result in their onCreate.
         setResult(AppCompatActivity.RESULT_CANCELED);
+
+        if (activityReceiver != null) {
+            IntentFilter intentFilter = new IntentFilter("job_finished");
+            registerReceiver(activityReceiver, intentFilter);
+        }
     }
 
     public void onPreferenceChanged(String pref) {
@@ -288,6 +296,20 @@ public abstract class BaseActivity
                 updateDisplayAdvancedDevices(mInjector.prefs.getShowDeviceRoot());
         }
     }
+
+   BroadcastReceiver activityReceiver = new BroadcastReceiver() {
+      @Override
+      public void onReceive(Context ctx, Intent args) {
+          String action = args.getAction();
+            if (action.equals("job_finished")) {
+                try {
+                   refreshDirectory(AnimationView.ANIM_NONE);
+                } catch (Exception e) {
+                   Log.e(mTag,"Failed to refresh directory");
+                }
+            }
+      }
+    };
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -339,6 +361,9 @@ public abstract class BaseActivity
         mRootsMonitor.stop();
         mPreferencesMonitor.stop();
         mSortController.destroy();
+        if (activityReceiver != null) {
+            unregisterReceiver(activityReceiver);
+        }
         super.onDestroy();
     }
 
